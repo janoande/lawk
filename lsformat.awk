@@ -3,12 +3,27 @@
 # - colors
 
 BEGIN {
-    # time
+    # time string
+    timestr[0] = "second"
+    timestr[1] = "minute"
+    timestr[2] = "hour"
+    timestr[3] = "day"
+    timestr[4] = "month"
+    timestr[5] = "year"
+
+    # time value
     minute = 60
     hour = minute * 60
     day = hour * 24
     month = day * 30.5
     year = month * 12
+    timeval[0] = 1
+    timeval[1] = minute
+    timeval[2] = hour
+    timeval[3] = day
+    timeval[4] = month
+    timeval[5] = year
+
     # colors
     black = "\033[30m"
     red = "\033[31m"
@@ -18,6 +33,13 @@ BEGIN {
     magenta = "\033[35m"
     cyan = "\033[36m"
     white = "\033[37m"
+    timecolor[0] = red
+    timecolor[1] = yellow
+    timecolor[2] = green
+    timecolor[3] = magenta
+    timecolor[4] = cyan
+    timecolor[5] = blue
+
     # preserve white space
     FPAT = "([[:space:]]*[^[:space:]]+)"
     OFS = ""
@@ -46,18 +68,14 @@ $1 != "total" {
 	file = file " " $i
     relative_last_mod = systime() - last_modified
 
-    if (relative_last_mod > year)
-	time = cyan int(relative_last_mod / year) " years"
-    else if (relative_last_mod > month)
-	time = blue int(relative_last_mod / month) " months"
-    else if (relative_last_mod > day)
-	time = magenta int(relative_last_mod / day) " days"
-    else if (relative_last_mod > hour)
-	time = green int(relative_last_mod / hour)" hours"
-    else if (relative_last_mod > minute)
-	time = yellow int(relative_last_mod / minute)" minutes"
-    else
-	time = red relative_last_mod " seconds"
+    # select appropriate time format
+    for (i = length(timestr)-1; i >= 0; i--) {
+	if (relative_last_mod > timeval[i]) {
+	    time = int(relative_last_mod / timeval[i])
+	    time = timecolor[i] time " " timestr[i] (time > 1 ? "s" : "")
+	    break
+	}
+    }
 
     # note: control code length = 5
     printf("%s%s%s%s%14s%16s%s\n",
