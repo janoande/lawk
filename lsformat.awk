@@ -17,7 +17,7 @@ BEGIN {
     day = hour * 24
     month = day * 30.5
     year = month * 12
-    timeval[0] = 1
+    timeval[0] = 0
     timeval[1] = minute
     timeval[2] = hour
     timeval[3] = day
@@ -65,26 +65,25 @@ $1 != "total" {
     # file name may be split into several fields
     file = $7
     for (i = 8; i <= NF; i++)
-	file = file " " $i
+        file = file " " $i
     relative_last_mod = systime() - last_modified
 
     # select appropriate time format
     for (i = length(timestr)-1; i >= 0; i--) {
-	if (relative_last_mod > timeval[i]) {
-	    time = int(relative_last_mod / timeval[i])
-	    time = timecolor[i] time " " timestr[i] (time > 1 ? "s" : "")
-	    break
-	}
+        if (relative_last_mod >= timeval[i]) {
+            time = int(relative_last_mod / (timeval[i] > 0 ? timeval[i] : 1))
+            time = timecolor[i] time " " timestr[i] (time == 1 ? "" : "s")
+            break
+        }
     }
 
     # note: control code length = 5
     printf("%s%s%s%s%14s%16s%s\n",
-	  cyan permissions,
-	  red links,
-	  white owner,
-	  white group,
-	  green size,
-	  time,
-	  file)
+          cyan permissions,
+          red links,
+          white owner,
+          white group,
+          green size,
+          time,
+          file)
 }
-
