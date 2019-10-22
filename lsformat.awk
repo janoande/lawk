@@ -65,7 +65,7 @@ $1 != "total" {
     # file name may be split into several fields
     file = $7
     for (i = 8; i <= NF; i++)
-        file = file " " $i
+        file = file $i
     relative_last_mod = systime() - last_modified
 
     # select appropriate time format
