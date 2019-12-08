@@ -44,11 +44,19 @@ BEGIN {
     FPAT = "([[:space:]]*[^[:space:]]+)"
     OFS = ""
 }
-
+$1 ~ /:$/ {
+    print white $0
+    next
+}
 $1 == "total" {
     print white $0
+    next
 }
-$1 != "total" {
+/^$/ {
+    print ""
+    next
+}
+{
     permissions = $1
     gsub("r", green "r", permissions)
     gsub("w", yellow "w", permissions)
