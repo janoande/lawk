@@ -44,7 +44,7 @@ BEGIN {
     FPAT = "([[:space:]]*[^[:space:]]+)"
     OFS = ""
 }
-$1 ~ /:$/ {
+$0 ~ /:$/ {
     print white $0
     next
 }
